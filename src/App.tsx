@@ -379,10 +379,6 @@ function App() {
     }
   }
 
-  async function handleExit() {
-    await invoke("exit_app");
-  }
-
   // 处理关闭确认
   async function handleCloseConfirm() {
     try {

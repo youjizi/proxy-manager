@@ -79,12 +79,17 @@ fn backup_config(software_name: &str, config_path: &PathBuf) -> Result<(), Strin
 
 /// 从备份还原软件配置
 /// reset_to_original: true = 重置到初始状态, false = 还原到上次配置
-fn restore_config(software_name: &str, config_path: &PathBuf, reset_to_original: bool) -> Result<bool, String> {
+fn restore_config(
+    software_name: &str,
+    config_path: &PathBuf,
+    reset_to_original: bool,
+) -> Result<bool, String> {
     let backup_path = if reset_to_original {
         get_original_backup_path(software_name)
     } else {
         get_current_backup_path(software_name)
-    }.ok_or("无法获取备份路径")?;
+    }
+    .ok_or("无法获取备份路径")?;
 
     if !backup_path.exists() {
         return Ok(false); // 没有备份，返回 false
@@ -158,7 +163,8 @@ pub fn get_software_list() -> Vec<SoftwareConfig> {
             software.config_path = Some(path.to_string_lossy().to_string());
             // 检查配置文件或其父目录是否存在
             let path_buf = PathBuf::from(&path);
-            software.installed = path_buf.exists() || path_buf.parent().map(|p| p.exists()).unwrap_or(false);
+            software.installed =
+                path_buf.exists() || path_buf.parent().map(|p| p.exists()).unwrap_or(false);
         }
     }
 
@@ -211,9 +217,7 @@ fn get_config_path(software_name: &str) -> Option<PathBuf> {
                             let mut idea_dirs: Vec<_> = entries
                                 .filter_map(|e| e.ok())
                                 .filter(|e| {
-                                    e.file_name()
-                                        .to_string_lossy()
-                                        .starts_with("IntelliJIdea")
+                                    e.file_name().to_string_lossy().starts_with("IntelliJIdea")
                                 })
                                 .collect();
                             idea_dirs.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
@@ -234,11 +238,7 @@ fn get_config_path(software_name: &str) -> Option<PathBuf> {
                     if let Ok(entries) = fs::read_dir(&app_support) {
                         let mut idea_dirs: Vec<_> = entries
                             .filter_map(|e| e.ok())
-                            .filter(|e| {
-                                e.file_name()
-                                    .to_string_lossy()
-                                    .starts_with("IntelliJIdea")
-                            })
+                            .filter(|e| e.file_name().to_string_lossy().starts_with("IntelliJIdea"))
                             .collect();
                         idea_dirs.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
                         if let Some(latest) = idea_dirs.first() {
@@ -397,7 +397,10 @@ fn disable_proxy_for_software(software_name: &str) -> Result<String, String> {
 
 // ============ Git 代理配置 ============
 
-fn enable_git_proxy(config_path: &PathBuf, proxy_settings: &ProxySettings) -> Result<String, String> {
+fn enable_git_proxy(
+    config_path: &PathBuf,
+    proxy_settings: &ProxySettings,
+) -> Result<String, String> {
     let mut content = if config_path.exists() {
         fs::read_to_string(config_path).unwrap_or_default()
     } else {
@@ -453,7 +456,10 @@ fn remove_git_proxy_section(content: &str) -> String {
 
 // ============ npm 代理配置 ============
 
-fn enable_npm_proxy(config_path: &PathBuf, proxy_settings: &ProxySettings) -> Result<String, String> {
+fn enable_npm_proxy(
+    config_path: &PathBuf,
+    proxy_settings: &ProxySettings,
+) -> Result<String, String> {
     let mut content = if config_path.exists() {
         fs::read_to_string(config_path).unwrap_or_default()
     } else {

@@ -28,8 +28,8 @@ pub struct CustomSoftware {
 /// 关闭行为偏好
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClosePreference {
-    pub remember: bool,           // 是否记住选择
-    pub action: String,           // "minimize" 或 "exit"
+    pub remember: bool, // 是否记住选择
+    pub action: String, // "minimize" 或 "exit"
 }
 
 impl Default for ClosePreference {
@@ -92,14 +92,12 @@ pub fn load_user_config() -> UserConfig {
 
     if config_path.exists() {
         match fs::read_to_string(&config_path) {
-            Ok(content) => {
-                match serde_json::from_str(&content) {
-                    Ok(config) => return config,
-                    Err(e) => {
-                        eprintln!("解析配置文件失败: {}", e);
-                    }
+            Ok(content) => match serde_json::from_str(&content) {
+                Ok(config) => return config,
+                Err(e) => {
+                    eprintln!("解析配置文件失败: {}", e);
                 }
-            }
+            },
             Err(e) => {
                 eprintln!("读取配置文件失败: {}", e);
             }
@@ -116,15 +114,13 @@ pub fn save_user_config(config: &UserConfig) -> Result<(), String> {
 
     // 确保目录存在
     if let Some(parent) = config_path.parent() {
-        fs::create_dir_all(parent)
-            .map_err(|e| format!("创建配置目录失败: {}", e))?;
+        fs::create_dir_all(parent).map_err(|e| format!("创建配置目录失败: {}", e))?;
     }
 
-    let content = serde_json::to_string_pretty(config)
-        .map_err(|e| format!("序列化配置失败: {}", e))?;
+    let content =
+        serde_json::to_string_pretty(config).map_err(|e| format!("序列化配置失败: {}", e))?;
 
-    fs::write(&config_path, content)
-        .map_err(|e| format!("写入配置文件失败: {}", e))?;
+    fs::write(&config_path, content).map_err(|e| format!("写入配置文件失败: {}", e))?;
 
     Ok(())
 }
@@ -164,7 +160,10 @@ pub fn delete_profile(profile_name: &str) -> Result<UserConfig, String> {
 }
 
 /// 更新软件的代理配置映射
-pub fn update_software_mapping(software_name: &str, profile_name: &str) -> Result<UserConfig, String> {
+pub fn update_software_mapping(
+    software_name: &str,
+    profile_name: &str,
+) -> Result<UserConfig, String> {
     let mut config = load_user_config();
 
     // 验证配置组是否存在
@@ -173,7 +172,11 @@ pub fn update_software_mapping(software_name: &str, profile_name: &str) -> Resul
     }
 
     // 查找并更新现有映射，或添加新映射
-    if let Some(mapping) = config.mappings.iter_mut().find(|m| m.software_name == software_name) {
+    if let Some(mapping) = config
+        .mappings
+        .iter_mut()
+        .find(|m| m.software_name == software_name)
+    {
         mapping.profile_name = profile_name.to_string();
     } else {
         config.mappings.push(SoftwareProxyMapping {
@@ -219,7 +222,11 @@ pub fn add_custom_software(software: CustomSoftware) -> Result<UserConfig, Strin
     let mut config = load_user_config();
 
     // 检查是否已存在同名软件
-    if config.custom_software.iter().any(|s| s.name == software.name) {
+    if config
+        .custom_software
+        .iter()
+        .any(|s| s.name == software.name)
+    {
         return Err(format!("软件 '{}' 已存在", software.name));
     }
 

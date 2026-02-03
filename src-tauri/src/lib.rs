@@ -4,7 +4,9 @@ mod profile_manager;
 
 use config_manager::{ProxySettings, SoftwareConfig};
 use port_detector::{DetectionResult, VpnConfig};
-use profile_manager::{ClosePreference, CustomSoftware, ProxyProfile, SoftwareProxyMapping, UserConfig};
+use profile_manager::{
+    ClosePreference, CustomSoftware, ProxyProfile, SoftwareProxyMapping, UserConfig,
+};
 use std::collections::HashMap;
 use tauri::{
     menu::{Menu, MenuItem},
@@ -73,13 +75,18 @@ fn delete_proxy_profile(profile_name: String) -> Result<UserConfig, String> {
 
 /// 更新软件的代理配置映射
 #[tauri::command]
-fn update_software_mapping(software_name: String, profile_name: String) -> Result<UserConfig, String> {
+fn update_software_mapping(
+    software_name: String,
+    profile_name: String,
+) -> Result<UserConfig, String> {
     profile_manager::update_software_mapping(&software_name, &profile_name)
 }
 
 /// 开启代理（使用配置组）
 #[tauri::command]
-fn enable_proxy_with_profiles(software_mappings: Vec<SoftwareProxyMapping>) -> Result<Vec<String>, String> {
+fn enable_proxy_with_profiles(
+    software_mappings: Vec<SoftwareProxyMapping>,
+) -> Result<Vec<String>, String> {
     let config = profile_manager::load_user_config();
     let profiles: HashMap<String, ProxyProfile> = config
         .profiles
@@ -102,7 +109,10 @@ fn enable_proxy_with_profiles(software_mappings: Vec<SoftwareProxyMapping>) -> R
                 Err(e) => results.push(format!("✗ {}: {}", mapping.software_name, e)),
             }
         } else {
-            results.push(format!("✗ {}: 未找到配置 '{}'", mapping.software_name, mapping.profile_name));
+            results.push(format!(
+                "✗ {}: 未找到配置 '{}'",
+                mapping.software_name, mapping.profile_name
+            ));
         }
     }
 
@@ -111,7 +121,11 @@ fn enable_proxy_with_profiles(software_mappings: Vec<SoftwareProxyMapping>) -> R
 
 /// 开启代理（旧接口，保持兼容）
 #[tauri::command]
-fn enable_proxy(software_list: Vec<String>, proxy_host: String, proxy_port: u16) -> Result<Vec<String>, String> {
+fn enable_proxy(
+    software_list: Vec<String>,
+    proxy_host: String,
+    proxy_port: u16,
+) -> Result<Vec<String>, String> {
     let proxy_settings = ProxySettings {
         http_proxy: format!("http://{}:{}", proxy_host, proxy_port),
         https_proxy: format!("http://{}:{}", proxy_host, proxy_port),

@@ -108,10 +108,7 @@ fn detect_port_by_process_names(process_names: &[String], config: &VpnConfig) ->
         // 进程未运行，返回默认端口
         DetectionResult {
             success: true,
-            message: format!(
-                "未检测到 {} 运行，使用默认端口",
-                config.name
-            ),
+            message: format!("未检测到 {} 运行，使用默认端口", config.name),
             ports: vec![
                 DetectedPort {
                     port: config.default_http_port,
@@ -188,10 +185,7 @@ fn find_ports_by_process_name(process_name: &str) -> Option<Vec<DetectedPort>> {
     }
 
     // 使用 netstat 查找这些 PID 监听的端口
-    let netstat_output = Command::new("netstat")
-        .args(["-ano"])
-        .output()
-        .ok()?;
+    let netstat_output = Command::new("netstat").args(["-ano"]).output().ok()?;
 
     let netstat_str = String::from_utf8_lossy(&netstat_output.stdout);
     let mut ports = Vec::new();
