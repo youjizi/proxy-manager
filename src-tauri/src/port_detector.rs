@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+#[cfg(any(target_os = "windows", target_os = "macos"))]
 use std::process::Command;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

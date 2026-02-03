@@ -104,7 +104,10 @@ fn enable_proxy_with_profiles(
                 no_proxy: "localhost,127.0.0.1,::1".to_string(),
             };
 
-            match config_manager::enable_proxy(&[mapping.software_name.clone()], &proxy_settings) {
+            match config_manager::enable_proxy(
+                std::slice::from_ref(&mapping.software_name),
+                &proxy_settings,
+            ) {
                 Ok(mut msgs) => results.append(&mut msgs),
                 Err(e) => results.push(format!("✗ {}: {}", mapping.software_name, e)),
             }

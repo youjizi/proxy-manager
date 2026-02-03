@@ -220,7 +220,7 @@ fn get_config_path(software_name: &str) -> Option<PathBuf> {
                                     e.file_name().to_string_lossy().starts_with("IntelliJIdea")
                                 })
                                 .collect();
-                            idea_dirs.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
+                            idea_dirs.sort_by_key(|b| std::cmp::Reverse(b.file_name()));
                             if let Some(latest) = idea_dirs.first() {
                                 return Some(
                                     latest.path().join("options").join("proxy.settings.xml"),

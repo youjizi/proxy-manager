@@ -191,6 +191,7 @@ pub fn update_software_mapping(
 }
 
 /// 更新代理配置组
+#[allow(dead_code)]
 pub fn update_profile(old_name: &str, profile: ProxyProfile) -> Result<UserConfig, String> {
     let mut config = load_user_config();
 
