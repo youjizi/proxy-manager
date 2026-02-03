@@ -146,6 +146,14 @@ pub fn get_software_list() -> Vec<SoftwareConfig> {
             config_path: None,
             is_custom: false,
         },
+        SoftwareConfig {
+            name: "Antigravity".to_string(),
+            config_type: "json".to_string(),
+            enabled: true,
+            installed: false,
+            config_path: None,
+            is_custom: false,
+        },
         #[cfg(target_os = "windows")]
         SoftwareConfig {
             name: "Windows Terminal".to_string(),
@@ -253,6 +261,20 @@ fn get_config_path(software_name: &str) -> Option<PathBuf> {
                 None
             }
         }
+        "Antigravity" => {
+            #[cfg(target_os = "windows")]
+            {
+                dirs::config_dir().map(|p| p.join("Antigravity").join("User").join("settings.json"))
+            }
+            #[cfg(target_os = "macos")]
+            {
+                Some(home_dir.join("Library/Application Support/Antigravity/User/settings.json"))
+            }
+            #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+            {
+                dirs::config_dir().map(|p| p.join("Antigravity").join("User").join("settings.json"))
+            }
+        }
         "Windows Terminal" => {
             // 环境变量不需要文件路径，返回 None
             None
@@ -357,7 +379,7 @@ fn enable_proxy_for_software(
     match software_name {
         "Git" => enable_git_proxy(&config_path, proxy_settings),
         "npm" => enable_npm_proxy(&config_path, proxy_settings),
-        "Cursor" | "VSCode" => enable_vscode_proxy(&config_path, proxy_settings),
+        "Cursor" | "VSCode" | "Antigravity" => enable_vscode_proxy(&config_path, proxy_settings),
         "IDEA" => enable_idea_proxy(&config_path, proxy_settings),
         _ => Err("不支持的软件".to_string()),
     }
@@ -389,7 +411,7 @@ fn disable_proxy_for_software(software_name: &str) -> Result<String, String> {
     match software_name {
         "Git" => disable_git_proxy(&config_path),
         "npm" => disable_npm_proxy(&config_path),
-        "Cursor" | "VSCode" => disable_vscode_proxy(&config_path),
+        "Cursor" | "VSCode" | "Antigravity" => disable_vscode_proxy(&config_path),
         "IDEA" => disable_idea_proxy(&config_path),
         _ => Err("不支持的软件".to_string()),
     }
